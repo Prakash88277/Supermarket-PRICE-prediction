@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>Main Page</title>
+</head>
+
+<body>
+    <div id="top"></div>
+    <a href="#top" class="button" id="back-to-top-button">Back to Top</a>
+    <header class="header">
+        <div class="header-container">
+            <img src="static/image.png" alt="Logo" class="logo">
+            <div class="header-text">
+                <h1>Shri Vaishnav Vidyapeeth Vishwavidyalaya</h1>
+                <p>Shri Vaishnav Vidyapeeth Vishwavidyalaya Campus: Indore – Ujjain Road, Indore – 453111</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="containar">
+        <h1 class="hadding mainhadding">Supermarket Total Spending Prediction Project Create by</h1>
+        <h1 class="hadding">Prakash Choudhary & Vaidik Sharma</h1>
+        <a href="#content" class="button" id="scroll-button">Start</a>
+    </div>
+
+    <div id="content">
+        <h1 class="hadding mainhadding">Supermarket Total Spending Prediction</h1>
+
+        <form id="predictForm">
+            <label for="hour">hour:</label>
+            <input type="number" id="hour" name="hour"><br><br>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age"><br><br>
+
+            <label for="loyalty_member">loyalty_member:</label>
+            <select id="loyalty_member" class="select" name="loyalty_member">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select><br><br>
+
+            <label for="weather">Weather:</label>
+            <select id="weather" class="select" name="weather">
+                <option value="Clear">Clear</option>
+                <option value="Rainy">Rainy</option>
+                <option value="Sunny">Sunny</option>
+                <option value="Cloudy">Cloudy</option>
+            </select><br><br>
+
+            <button type="button" class="button" onclick="makePrediction()">Predict</button>
+        </form>
+        <div class="output-field">
+            <p id="result">Not predic anything.</p>
+        </div>
+        
+    </div>
+
+    <script>
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('scroll-button').addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const contentElement = document.querySelector('#content');
+                if (contentElement) {
+                    contentElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                } else {
+                    console.error("Element #content not found.");
+                }
+            });
+
+            document.getElementById('back-to-top-button').addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const topElement = document.querySelector('#top');
+                if (topElement) {
+                    topElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                } else {
+                    console.error("Element #top not found.");
+                }
+            });
+        });
+
+
+        function makePrediction() {
+            const formData = {
+                hour: document.getElementById('hour').value,
+                age: document.getElementById('age').value,
+                loyalty_member: document.getElementById('loyalty_member').value,
+                weather: document.getElementById('weather').value
+            };
+
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = 'Total Spending ($): ' + data.predictions[0].toFixed(2) + '\nTotal Spending (₹): ' + (data.predictions[0] * 84.05).toFixed(2);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+
+</html>
